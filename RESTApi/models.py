@@ -27,7 +27,7 @@ class Kolumna(models.Model):
         return self.tytul
 
 
-class Notatka(models.Model):
+class Notatka(models.Model): # MaciekP
     stworzone_przez = models.ForeignKey(User, on_delete=models.CASCADE)
     przypisany_uzytkownik = models.ManyToManyField(User, related_name='przypisany_uzytkownik')
     data_stworzenia = models.DateTimeField(auto_now_add=True)

@@ -15,9 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from RESTApi.views import *
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('dj_rest_auth/', include('dj_rest_auth.urls')),
     path('dj_rest_auth/registration/', include('dj_rest_auth.registration.urls')),
+
+    path('api/notatka/', NotatkaViewSetList.as_view()), #MaciekP
+    path('api/notatka/<int:pk>/', NotatkaViewSetDetail.as_view()), #MaciekP
+    path('api/notatkiuzytkownika/<int:pk>', NotatkiUzytownikaViewSetList.as_view()), #MaciekP
 ]
