@@ -5,6 +5,7 @@ from rest_framework import status
 from .models import *
 from .serializers import *
 from django.http import Http404
+# Create your views here.
 
 
 class NotatkaViewSetList(APIView): #MaciekP
