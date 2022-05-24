@@ -1,7 +1,11 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class RolaWAplikacji(models.Model):
     nazwa = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return str(self.nazwa)
 
 class Uzytkownik(models.Model):
     email = models.EmailField(max_length=255, unique=True)
@@ -9,14 +13,24 @@ class Uzytkownik(models.Model):
     zdjecie = models.ImageField(upload_to='profile_pics', blank=True)
     rola_w_aplikacji = models.ForeignKey(RolaWAplikacji, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return str(self.email)
+
+
 class Tablica(models.Model):
     tytul = models.CharField(max_length=255)
     czy_zautomatyzowane = models.BooleanField(default=False)
+
+    def __str__(self):
+        return str(self.tytul)
 
 class TablicaUzytkownik(models.Model):
     tablica = models.ForeignKey(Tablica, on_delete=models.CASCADE)
     uzytkownik = models.ForeignKey(Uzytkownik, on_delete=models.CASCADE)
     rola_w_tablicy = models.CharField(max_length=255)
+
+    def __str__(self):
+        return str(self.tablica)+" "+str(self.uzytkownik)
 
 class Kolumna(models.Model):
     tytul = models.CharField(max_length=255)
