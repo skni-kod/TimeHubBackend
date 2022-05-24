@@ -1,11 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-class RolaWAplikacji(models.Model):
-    nazwa = models.CharField(max_length=255, unique=True)
+
+class ZdjecieUzytkownika(models.Model):
+    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    zdjecie = models.ImageField(upload_to='zdjecia/')
 
     def __str__(self):
-        return str(self.nazwa)
+        return self.user.username
+
+
 
 class Uzytkownik(models.Model):
     email = models.EmailField(max_length=255, unique=True)
@@ -20,9 +24,11 @@ class Uzytkownik(models.Model):
 class Tablica(models.Model):
     tytul = models.CharField(max_length=255)
     czy_zautomatyzowane = models.BooleanField(default=False)
+    uzytkownicy = models.ManyToManyField(User)
 
     def __str__(self):
-        return str(self.tytul)
+        return self.tytul
+
 
 class TablicaUzytkownik(models.Model):
     tablica = models.ForeignKey(Tablica, on_delete=models.CASCADE)
@@ -36,8 +42,13 @@ class Kolumna(models.Model):
     tytul = models.CharField(max_length=255)
     tablica = models.ForeignKey(Tablica, on_delete=models.CASCADE)
 
-class Notatka(models.Model):
-    stworzone_przez = models.ForeignKey(Uzytkownik, on_delete=models.CASCADE)
+    def __str__(self):
+        return self.tytul
+
+
+class Notatka(models.Model): # MaciekP
+    stworzone_przez = models.ForeignKey(User, on_delete=models.CASCADE)
+    przypisany_uzytkownik = models.ManyToManyField(User, related_name='przypisany_uzytkownik')
     data_stworzenia = models.DateTimeField(auto_now_add=True)
     czy_zrobione = models.BooleanField(default=False)
     czy_wazne = models.BooleanField(default=False)
@@ -45,10 +56,11 @@ class Notatka(models.Model):
     data_rozpoczecia = models.DateTimeField(blank=True, null=True)
     data_zakonczenia = models.DateTimeField(blank=True, null=True)
     kolumna = models.ForeignKey(Kolumna, on_delete=models.CASCADE)
+    etykieta = models.ManyToManyField('Etykieta')
 
-class UzytkownikNotatka(models.Model):
-    uzytkownik = models.ForeignKey(Uzytkownik, on_delete=models.CASCADE)
-    notatka = models.ForeignKey(Notatka, on_delete=models.CASCADE)
+    def __str__(self):
+        return self.zawartosc
+
 
 class Etykieta(models.Model):
     nazwa = models.CharField(max_length=255)
@@ -56,14 +68,13 @@ class Etykieta(models.Model):
     kolor = models.CharField(max_length=255)
     priorytet = models.IntegerField()
 
-class TablicaEtykieta(models.Model):
-    tablica = models.ForeignKey(Tablica, on_delete=models.CASCADE)
-    etykieta = models.ForeignKey(Etykieta, on_delete=models.CASCADE)
+    def __str__(self):
+        return self.nazwa
 
-class NotatkaEtykieta(models.Model):
-    notatka = models.ForeignKey(Notatka, on_delete=models.CASCADE)
-    etykieta = models.ForeignKey(Etykieta, on_delete=models.CASCADE)
 
 class Zdjecie(models.Model):
     zdjecie = models.ImageField(upload_to='images')
     notatka = models.ForeignKey(Notatka, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.notatka.zawartosc

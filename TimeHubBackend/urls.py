@@ -14,14 +14,23 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, re_path
+from django.urls import include, path
 from RESTApi.views import *
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('dj_rest_auth/', include('dj_rest_auth.urls')),
+    path('dj_rest_auth/registration/', include('dj_rest_auth.registration.urls')),
+
+    path('api/notatka/', NotatkaViewSetList.as_view()), #MaciekP
+    path('api/notatka/<int:pk>/', NotatkaViewSetDetail.as_view()), #MaciekP
+    path('api/notatkiuzytkownika/<int:pk>', NotatkiUzytownikaViewSetList.as_view()), #MaciekP
+
     re_path(r'^api/tablice/$', TablicaViewSetList.as_view()),
     re_path(r'^api/tablice/(?P<pk>[0-9]+)/$', TablicaViewSetDetail.as_view()),
     re_path(r'^api/tablicaUzytkownik/$', TablicaUzytkownikViewSetList.as_view()),
     re_path(r'^api/tablicaUzytkownicy/(?P<pk>[0-9]+)/$', TablicaUzytkownicyViewSetDetail.as_view()),
     re_path(r'^api/uzytkownikTablice/(?P<pk>[0-9]+)/$', UzytkownikTabliceViewSetDetail.as_view()),
+
 ]

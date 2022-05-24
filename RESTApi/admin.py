@@ -1,9 +1,11 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.models import User
-
 from .models import *
+# Register your models here.
 
-admin.site.register([Uzytkownik, RolaWAplikacji, Tablica, TablicaUzytkownik, Kolumna, Notatka, UzytkownikNotatka, Etykieta, TablicaEtykieta, NotatkaEtykieta, Zdjecie])
-
+admin.site.register(ZdjecieUzytkownika)
+admin.site.register(Tablica)
+admin.site.register(Kolumna)
+admin.site.register(Notatka)
+admin.site.register(Etykieta)
+admin.site.register(Zdjecie)
 
