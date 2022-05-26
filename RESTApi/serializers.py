@@ -14,12 +14,11 @@ class RolaWAplikacjiSerializer(serializers.ModelSerializer):
         fields = ('__all__')
 
 
-class UzytkownikSerializer(serializers.ModelSerializer):
-    rola_w_aplikacji = RolaWAplikacjiSerializer(read_only=True)
-
+class UserSerializer(serializers.ModelSerializer):
+    #rola_w_aplikacji = RolaWAplikacjiSerializer(read_only=True)
     class Meta:
-        model = Uzytkownik
-        fields = ('id', 'email', 'haslo', 'zdjecie', 'rola_w_aplikacji')
+        model = User
+        fields = ('first_name','email')
 
 
 class TablicaSerializer(serializers.ModelSerializer):
@@ -28,20 +27,30 @@ class TablicaSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class TablicaUzytkownikSerializer(serializers.ModelSerializer):
-    tablica = TablicaSerializer()
-    uzytkownik = UzytkownikSerializer()
+    #tablica = TablicaSerializer()
+    #user = UserSerializer()
     class Meta:
         model = TablicaUzytkownik
-        fields = ('tablica','uzytkownik','rola_w_tablicy')
+        fields = ('tablica','user','rola_w_tablicy')
 
-class TablicaUzytkownicySerializer(serializers.ModelSerializer):
-    #uzytkownik = UzytkownikSerializer()
+class TablicaUzytkownicySerializerGET(serializers.ModelSerializer):
+    user = UserSerializer()
     class Meta:
         model = TablicaUzytkownik
-        fields = ('tablica','uzytkownik')
+        fields = ('tablica','user')
 
-class UzytkownikTabliceSerializer(serializers.ModelSerializer):
+class TablicaUzytkownicySerializerPOST(serializers.ModelSerializer):
+    class Meta:
+        model = TablicaUzytkownik
+        fields = ('tablica','user')
+
+class UzytkownikTabliceSerializerGET(serializers.ModelSerializer):
     tablica = TablicaSerializer()
     class Meta:
         model = TablicaUzytkownik
-        fields = ('uzytkownik','tablica','rola_w_tablicy')
+        fields = ('user','tablica','rola_w_tablicy')
+
+class UzytkownikTabliceSerializerPOST(serializers.ModelSerializer):
+    class Meta:
+        model = TablicaUzytkownik
+        fields = ('user','tablica')

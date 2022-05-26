@@ -9,22 +9,25 @@ class ZdjecieUzytkownika(models.Model):
     def __str__(self):
         return self.user.username
 
-
-
-class Uzytkownik(models.Model):
-    email = models.EmailField(max_length=255, unique=True)
-    haslo = models.CharField(max_length=255)
-    zdjecie = models.ImageField(upload_to='profile_pics', blank=True)
-    rola_w_aplikacji = models.ForeignKey(RolaWAplikacji, on_delete=models.CASCADE)
+class RolaWAplikacji(models.Model):
+    nazwa = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
-        return str(self.email)
+        return self.nazwa;
+
+#class Uzytkownik(models.Model):
+#    email = models.EmailField(max_length=255, unique=True)
+#    haslo = models.CharField(max_length=255)
+#    zdjecie = models.ImageField(upload_to='profile_pics', blank=True)
+#    rola_w_aplikacji = models.ForeignKey(RolaWAplikacji, on_delete=models.CASCADE)
+
+#    def __str__(self):
+#        return str(self.email)
 
 
 class Tablica(models.Model):
     tytul = models.CharField(max_length=255)
     czy_zautomatyzowane = models.BooleanField(default=False)
-    uzytkownicy = models.ManyToManyField(User)
 
     def __str__(self):
         return self.tytul
@@ -32,11 +35,11 @@ class Tablica(models.Model):
 
 class TablicaUzytkownik(models.Model):
     tablica = models.ForeignKey(Tablica, on_delete=models.CASCADE)
-    uzytkownik = models.ForeignKey(Uzytkownik, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     rola_w_tablicy = models.CharField(max_length=255)
 
     def __str__(self):
-        return str(self.tablica)+" "+str(self.uzytkownik)
+        return str(self.tablica)+" "+str(self.user)
 
 class Kolumna(models.Model):
     tytul = models.CharField(max_length=255)

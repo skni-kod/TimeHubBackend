@@ -8,4 +8,5 @@ admin.site.register(Kolumna)
 admin.site.register(Notatka)
 admin.site.register(Etykieta)
 admin.site.register(Zdjecie)
+admin.site.register(TablicaUzytkownik)
 

@@ -6,6 +6,7 @@ from rest_framework import status
 from .models import *
 from .serializers import *
 from django.http import Http404
+from rest_framework.authtoken.models import Token
 # Create your views here.
 
 
@@ -58,12 +59,18 @@ class NotatkaViewSetDetail(APIView): #MacieKP
         notatka.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
 class NotatkiUzytownikaViewSetList(APIView): #MaciekP
 
     def get(self, request, pk, format=None):
         notatki = Notatka.objects.filter(przypisany_uzytkownik=pk)
         serializer = NotatkaSerializer(notatki, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class UserViewSetList(APIView): #MaciekP
+
+    def get(self, request, format=None):
+        user = User.objects.all()
+        serializer = UserSerializer(user, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class TablicaViewSetList(APIView):
@@ -84,7 +91,7 @@ class TablicaViewSetDetail(APIView):
         try:
             return Tablica.objects.get(pk=pk)
         except Tablica.DoesNotExist:
-            return Response(status = status.HTTP_200_OK)
+            return Response(status = status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, pk):
         queryset = self.get_object(pk)
@@ -119,40 +126,69 @@ class TablicaUzytkownikViewSetList(APIView):
         serializer = TablicaUzytkownikSerializer(queryset, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
-class TablicaUzytkownicyViewSetDetail(APIView):
-    def get_object(self, pk):
-        try:
-            return TablicaUzytkownik.objects.filter(tablica=pk)
-        except TablicaUzytkownik.DoesNotExist:
-            return Response(status = status.HTTP_200_OK)
-
-    def get(self, request, pk):
-        tablicaUzytkownik = self.get_object(pk)
-        serializer = TablicaUzytkownicySerializer(tablicaUzytkownik, many=True)
-        return Response(data = serializer.data, status=status.HTTP_200_OK)
-
-    def post(self, request, pk):
-        serializer = TablicaUzytkownicySerializer(data=request.data)
+    def post(self, request):
+        serializer = TablicaUzytkownikSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class UzytkownikTabliceViewSetDetail(APIView):
+class TablicaUzytkownicyViewSetDetail(APIView):
     def get_object(self, pk):
         try:
-            return TablicaUzytkownik.objects.filter(uzytkownik=pk)
+            return TablicaUzytkownik.objects.filter(tablica=pk)
         except TablicaUzytkownik.DoesNotExist:
-            return Response(status = status.HTTP_200_OK)
+            return Response(status=status.HTTP_200_OK)
 
     def get(self, request, pk):
         tablicaUzytkownik = self.get_object(pk)
-        serializer = UzytkownikTabliceSerializer(tablicaUzytkownik, many=True)
+        serializer = TablicaUzytkownicySerializerGET(tablicaUzytkownik, many=True)
         return Response(data = serializer.data, status=status.HTTP_200_OK)
 
-    #re
     def post(self, request, pk):
-        serializer = UzytkownikTabliceSerializer(data=request.data)
+        serializer = TablicaUzytkownicySerializerPOST(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk):
+        tablicaUzytkownik = self.get_object(pk)
+        serializer = TablicaUzytkownicySerializerPOST(tablicaUzytkownik, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, pk):
+        tablicaUzytkownik = self.get_object(pk)
+        serializer = TablicaUzytkownicySerializerPOST(tablicaUzytkownik, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        tablicaUzytkownik = self.get_object(pk)
+        tablicaUzytkownik.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class UzytkownikTabliceViewSetDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return TablicaUzytkownik.objects.filter(user=pk)
+        except TablicaUzytkownik.DoesNotExist:
+            return Response(status=status.HTTP_200_OK)
+
+    def get(self, request):
+        user = request.user
+        tablicaUzytkownik = self.get_object(getattr(user, 'id'))
+        serializer = UzytkownikTabliceSerializerGET(tablicaUzytkownik, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+    def post(self, request):
+        serializer = UzytkownikTabliceSerializerPOST(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
