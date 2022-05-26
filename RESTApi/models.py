@@ -15,16 +15,6 @@ class RolaWAplikacji(models.Model):
     def __str__(self):
         return self.nazwa;
 
-#class Uzytkownik(models.Model):
-#    email = models.EmailField(max_length=255, unique=True)
-#    haslo = models.CharField(max_length=255)
-#    zdjecie = models.ImageField(upload_to='profile_pics', blank=True)
-#    rola_w_aplikacji = models.ForeignKey(RolaWAplikacji, on_delete=models.CASCADE)
-
-#    def __str__(self):
-#        return str(self.email)
-
-
 class Tablica(models.Model):
     tytul = models.CharField(max_length=255)
     czy_zautomatyzowane = models.BooleanField(default=False)

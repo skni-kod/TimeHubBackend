@@ -66,7 +66,7 @@ class NotatkiUzytownikaViewSetList(APIView): #MaciekP
         serializer = NotatkaSerializer(notatki, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class UserViewSetList(APIView): #MaciekP
+class UserViewSetList(APIView):
 
     def get(self, request, format=None):
         user = User.objects.all()
@@ -194,3 +194,60 @@ class UzytkownikTabliceViewSetDetail(APIView):
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class KolumnaViewSetList(APIView):
+
+    def get(self, request, format=None):
+        user = Kolumna.objects.all()
+        serializer = KolumnaSerializer(user, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    def post(self, request):
+        serializer = TablicaUzytkownikSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class KolumnaViewSetDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return Kolumna.objects.get(pk=pk)
+        except Kolumna.DoesNotExist:
+            return Response(status = status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, pk):
+        queryset = self.get_object(pk)
+        serializer = KolumnaSerializer(queryset)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, pk):
+        kolumna = self.get_object(pk)
+        serializer = KolumnaSerializer(kolumna, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        kolumna = self.get_object(pk)
+        kolumna.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def patch(self, request, pk):
+        kolumna = self.get_object(pk)
+        serializer = KolumnaSerializer(kolumna, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class TablicaKolumnyViewSetDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return Kolumna.objects.filter(tablica=pk)
+        except TablicaUzytkownik.DoesNotExist:
+            return Response(status=status.HTTP_200_OK)
+
+    def get(self, request, pk):
+        TablicaKolumny = self.get_object(pk)
+        serializer = KolumnaSerializer(TablicaKolumny, many=True)
+        return Response(data = serializer.data, status=status.HTTP_200_OK)

@@ -33,5 +33,7 @@ urlpatterns = [
     re_path(r'^api/tablicaUzytkownik/$', TablicaUzytkownikViewSetList.as_view()), #Set lista relacji tablica uzytkownik
     re_path(r'^api/tablicaUzytkownicy/(?P<pk>[0-9]+)/$', TablicaUzytkownicyViewSetDetail.as_view()), #wszyscy użytkownicy tablicy okreslonej przez pk , cały CRUD
     re_path(r'^api/uzytkownikTablice/$', UzytkownikTabliceViewSetDetail.as_view()), #tablice danego użytkownika po przekazaniu tokena w headerze requesta
-
+    re_path(r'^api/kolumny/$', KolumnaViewSetList.as_view()), #GET PUT kolumn
+    re_path(r'^api/kolumny/(?P<pk>[0-9]+)/$', KolumnaViewSetDetail.as_view()), #Detail set kolumn, GET PUT PATCH DELETE
+    re_path(r'^api/tablicaKolumny/(?P<pk>[0-9]+)/$', TablicaKolumnyViewSetDetail.as_view()), #wszystkie kolumny danej tablicy GET
 ]
