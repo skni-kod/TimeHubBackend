@@ -138,7 +138,7 @@ class TablicaUzytkownicyViewSetDetail(APIView):
         try:
             return TablicaUzytkownik.objects.filter(tablica=pk)
         except TablicaUzytkownik.DoesNotExist:
-            return Response(status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, pk):
         tablicaUzytkownik = self.get_object(pk)
@@ -178,7 +178,7 @@ class UzytkownikTabliceViewSetDetail(APIView):
         try:
             return TablicaUzytkownik.objects.filter(user=pk)
         except TablicaUzytkownik.DoesNotExist:
-            return Response(status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
         user = request.user
@@ -244,10 +244,22 @@ class TablicaKolumnyViewSetDetail(APIView):
     def get_object(self, pk):
         try:
             return Kolumna.objects.filter(tablica=pk)
-        except TablicaUzytkownik.DoesNotExist:
-            return Response(status=status.HTTP_200_OK)
+        except Kolumna.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, pk):
         TablicaKolumny = self.get_object(pk)
         serializer = KolumnaSerializer(TablicaKolumny, many=True)
+        return Response(data = serializer.data, status=status.HTTP_200_OK)
+
+class KolumnaNotatkiViewSetDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return Notatka.objects.filter(kolumna=pk)
+        except Notatka.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, pk):
+        KolumnaNotatki = self.get_object(pk)
+        serializer = NotatkaSerializer(KolumnaNotatki, many=True)
         return Response(data = serializer.data, status=status.HTTP_200_OK)

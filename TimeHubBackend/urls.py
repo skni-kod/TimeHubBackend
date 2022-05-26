@@ -35,5 +35,6 @@ urlpatterns = [
     re_path(r'^api/uzytkownikTablice/$', UzytkownikTabliceViewSetDetail.as_view()), #tablice danego użytkownika po przekazaniu tokena w headerze requesta
     re_path(r'^api/kolumny/$', KolumnaViewSetList.as_view()), #GET PUT kolumn
     re_path(r'^api/kolumny/(?P<pk>[0-9]+)/$', KolumnaViewSetDetail.as_view()), #Detail set kolumn, GET PUT PATCH DELETE
-    re_path(r'^api/tablicaKolumny/(?P<pk>[0-9]+)/$', TablicaKolumnyViewSetDetail.as_view()), #wszystkie kolumny danej tablicy GET
+    re_path(r'^api/tablicaKolumny/(?P<pk>[0-9]+)/$', TablicaKolumnyViewSetDetail.as_view()), #wszystkie kolumny danej tablicy
+    re_path(r'^api/kolumnaNotatki/(?P<pk>[0-9]+)/$', KolumnaNotatkiViewSetDetail.as_view()), #wszystkie notatki danej kolumny
 ]
