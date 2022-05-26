@@ -1,4 +1,3 @@
-
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -263,3 +262,4 @@ class KolumnaNotatkiViewSetDetail(APIView):
         KolumnaNotatki = self.get_object(pk)
         serializer = NotatkaSerializer(KolumnaNotatki, many=True)
         return Response(data = serializer.data, status=status.HTTP_200_OK)
+

@@ -9,6 +9,7 @@ class ZdjecieUzytkownika(models.Model):
     def __str__(self):
         return self.user.username
 
+
 class RolaWAplikacji(models.Model):
     nazwa = models.CharField(max_length=255, unique=True)
 
@@ -21,7 +22,6 @@ class Tablica(models.Model):
 
     def __str__(self):
         return self.tytul
-
 
 class TablicaUzytkownik(models.Model):
     tablica = models.ForeignKey(Tablica, on_delete=models.CASCADE)

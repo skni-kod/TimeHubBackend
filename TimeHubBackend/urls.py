@@ -27,6 +27,7 @@ urlpatterns = [
     path('api/notatka/<int:pk>/', NotatkaViewSetDetail.as_view()), #MaciekP
     path('api/notatkiuzytkownika/<int:pk>', NotatkiUzytownikaViewSetList.as_view()), #MaciekP
 
+
     re_path(r'^api/user/$', UserViewSetList.as_view()),
     re_path(r'^api/tablice/$', TablicaViewSetList.as_view()), #GET i PUT wszystkich tablic
     re_path(r'^api/tablice/(?P<pk>[0-9]+)/$', TablicaViewSetDetail.as_view()), #CRUD do poszczegolnych tablic
@@ -37,4 +38,5 @@ urlpatterns = [
     re_path(r'^api/kolumny/(?P<pk>[0-9]+)/$', KolumnaViewSetDetail.as_view()), #Detail set kolumn, GET PUT PATCH DELETE
     re_path(r'^api/tablicaKolumny/(?P<pk>[0-9]+)/$', TablicaKolumnyViewSetDetail.as_view()), #wszystkie kolumny danej tablicy
     re_path(r'^api/kolumnaNotatki/(?P<pk>[0-9]+)/$', KolumnaNotatkiViewSetDetail.as_view()), #wszystkie notatki danej kolumny
+
 ]
