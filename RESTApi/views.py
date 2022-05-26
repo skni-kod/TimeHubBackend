@@ -60,7 +60,9 @@ class NotatkaViewSetDetail(APIView): #MacieKP
 
 class NotatkiUzytownikaViewSetList(APIView): #MaciekP
 
-    def get(self, request, pk, format=None):
-        notatki = Notatka.objects.filter(przypisany_uzytkownik=pk)
+    def get(self, request, format=None):
+        user = request.user
+        #userid = self.get_object(getattr(user, 'id'))
+        notatki = Notatka.objects.filter(przypisany_uzytkownik=getattr(user, 'id'))
         serializer = NotatkaSerializer(notatki, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
