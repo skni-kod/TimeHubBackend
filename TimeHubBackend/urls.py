@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import include, path, re_path
+from django.urls import include, path
 from RESTApi.views import *
 
 
@@ -26,17 +26,4 @@ urlpatterns = [
     path('api/notatka/', NotatkaViewSetList.as_view()), #MaciekP
     path('api/notatka/<int:pk>/', NotatkaViewSetDetail.as_view()), #MaciekP
     path('api/notatkiuzytkownika/<int:pk>', NotatkiUzytownikaViewSetList.as_view()), #MaciekP
-
-
-    re_path(r'^api/user/$', UserViewSetList.as_view()),
-    re_path(r'^api/tablice/$', TablicaViewSetList.as_view()), #GET i PUT wszystkich tablic
-    re_path(r'^api/tablice/(?P<pk>[0-9]+)/$', TablicaViewSetDetail.as_view()), #CRUD do poszczegolnych tablic
-    re_path(r'^api/tablicaUzytkownik/$', TablicaUzytkownikViewSetList.as_view()), #Set lista relacji tablica uzytkownik
-    re_path(r'^api/tablicaUzytkownicy/(?P<pk>[0-9]+)/$', TablicaUzytkownicyViewSetDetail.as_view()), #wszyscy użytkownicy tablicy okreslonej przez pk , cały CRUD
-    re_path(r'^api/uzytkownikTablice/$', UzytkownikTabliceViewSetDetail.as_view()), #tablice danego użytkownika po przekazaniu tokena w headerze requesta
-    re_path(r'^api/kolumny/$', KolumnaViewSetList.as_view()), #GET PUT kolumn
-    re_path(r'^api/kolumny/(?P<pk>[0-9]+)/$', KolumnaViewSetDetail.as_view()), #Detail set kolumn, GET PUT PATCH DELETE
-    re_path(r'^api/tablicaKolumny/(?P<pk>[0-9]+)/$', TablicaKolumnyViewSetDetail.as_view()), #wszystkie kolumny danej tablicy
-    re_path(r'^api/kolumnaNotatki/(?P<pk>[0-9]+)/$', KolumnaNotatkiViewSetDetail.as_view()), #wszystkie notatki danej kolumny
-
 ]

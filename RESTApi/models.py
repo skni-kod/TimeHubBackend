@@ -10,26 +10,14 @@ class ZdjecieUzytkownika(models.Model):
         return self.user.username
 
 
-class RolaWAplikacji(models.Model):
-    nazwa = models.CharField(max_length=255, unique=True)
-
-    def __str__(self):
-        return self.nazwa;
-
 class Tablica(models.Model):
     tytul = models.CharField(max_length=255)
     czy_zautomatyzowane = models.BooleanField(default=False)
+    uzytkownicy = models.ManyToManyField(User)
 
     def __str__(self):
         return self.tytul
 
-class TablicaUzytkownik(models.Model):
-    tablica = models.ForeignKey(Tablica, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    rola_w_tablicy = models.CharField(max_length=255)
-
-    def __str__(self):
-        return str(self.tablica)+" "+str(self.user)
 
 class Kolumna(models.Model):
     tytul = models.CharField(max_length=255)
