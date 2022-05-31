@@ -10,12 +10,6 @@ class ZdjecieUzytkownika(models.Model):
         return self.user.username
 
 
-class RolaWAplikacji(models.Model):
-    nazwa = models.CharField(max_length=255, unique=True)
-
-    def __str__(self):
-        return self.nazwa;
-
 class Tablica(models.Model):
     tytul = models.CharField(max_length=255)
     czy_zautomatyzowane = models.BooleanField(default=False)
