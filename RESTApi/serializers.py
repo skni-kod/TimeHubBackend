@@ -8,14 +8,7 @@ class NotatkaSerializer(serializers.ModelSerializer): #MaciekP
         fields = ('id', 'kolumna', 'stworzone_przez', 'data_stworzenia', 'czy_zrobione', 'czy_wazne', 'zawartosc', 'data_rozpoczecia', 'data_zakonczenia', 'etykieta')
 
 
-class RolaWAplikacjiSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RolaWAplikacji
-        fields = ('__all__')
-
-
 class UserSerializer(serializers.ModelSerializer):
-    #rola_w_aplikacji = RolaWAplikacjiSerializer(read_only=True)
     class Meta:
         model = User
         fields = ('first_name','email')
