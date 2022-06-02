@@ -11,7 +11,7 @@ class NotatkaSerializer(serializers.ModelSerializer): #MaciekP
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('first_name','email')
+        fields = ('username','email','first_name','last_name')
 
 
 class TablicaSerializer(serializers.ModelSerializer):
@@ -51,5 +51,31 @@ class UzytkownikTabliceSerializerPOST(serializers.ModelSerializer):
 class KolumnaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Kolumna
-        fields = ('tablica','id','tytul')
+        fields = ('tablica','tytul')
 
+class EtykietaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Etykieta
+        fields = ('nazwa', 'opis', 'kolor', 'priorytet')
+
+class NotatkaEtykietaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NotatkaEtykieta
+        fields = ('notatka', 'etykieta')
+
+class NotatkaEtykietySerializerGET(serializers.ModelSerializer):
+    etykieta = EtykietaSerializer()
+    class Meta:
+        model = NotatkaEtykieta
+        fields = ('notatka', 'etykieta')
+
+class TablicaEtykietaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TablicaEtykieta
+        fields = ('tablica', 'etykieta')
+
+class TablicaEtykietySerializerGET(serializers.ModelSerializer):
+    etykieta = EtykietaSerializer()
+    class Meta:
+        model = TablicaEtykieta
+        fields = ('tablica', 'etykieta')
