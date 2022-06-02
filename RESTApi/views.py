@@ -72,16 +72,61 @@ class UserViewSetList(APIView):
         serializer = UserSerializer(user, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+class UserViewSetDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response(status = status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, pk):
+        queryset = self.get_object(pk)
+        serializer = UserSerializer(queryset)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, pk):
+        user = self.get_object(pk)
+        serializer = UserSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        user = self.get_object(pk)
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def patch(self, request, pk):
+        user = self.get_object(pk)
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class TablicaViewSetList(APIView):
     def get(self, request):
         queryset = Tablica.objects.all()
         serializer = TablicaSerializer(queryset, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
-    def post(selfself, request):
+    def post(self, request):
         serializer = TablicaSerializer(data=request.data)
         if serializer.is_valid():
+            user = request.user
+            user_id = getattr(user, 'id')
             serializer.save()
+            tablica_id = serializer.data.get('id')
+            TablicaUzytkownikViewSetList.outerPost(self, {'tablica': tablica_id, 'user': user_id, 'rola_w_tablicy': 'admin'})
+
+            czy_zautomatyzowane = serializer.data.get('czy_zautomatyzowane')
+            if czy_zautomatyzowane == True:
+                KolumnaViewSetList.outerPost(self, {'tablica': tablica_id, 'tytul': 'To do'})
+                KolumnaViewSetList.outerPost(self, {'tablica': tablica_id, 'tytul': 'Doing'})
+                KolumnaViewSetList.outerPost(self, {'tablica': tablica_id, 'tytul': 'Testing'})
+                KolumnaViewSetList.outerPost(self, {'tablica': tablica_id, 'tytul': 'Done'})
+
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -127,6 +172,13 @@ class TablicaUzytkownikViewSetList(APIView):
 
     def post(self, request):
         serializer = TablicaUzytkownikSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def outerPost(self, s_data):
+        serializer = TablicaUzytkownikSerializer(data=s_data)
         if serializer.is_valid():
             serializer.save()
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
@@ -206,6 +258,13 @@ class KolumnaViewSetList(APIView):
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def outerPost(self, s_data):
+        serializer = KolumnaSerializer(data=s_data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class KolumnaViewSetDetail(APIView):
     def get_object(self, pk):
         try:
@@ -262,4 +321,160 @@ class KolumnaNotatkiViewSetDetail(APIView):
         KolumnaNotatki = self.get_object(pk)
         serializer = NotatkaSerializer(KolumnaNotatki, many=True)
         return Response(data = serializer.data, status=status.HTTP_200_OK)
+
+class EtykietaViewSetList(APIView):
+
+    def get(self, request, format=None):
+        etykieta = Etykieta.objects.all()
+        serializer = EtykietaSerializer(etykieta, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = EtykietaSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class EtykietaViewSetDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return Etykieta.objects.get(pk=pk)
+        except Etykieta.DoesNotExist:
+            return Response(status = status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, pk):
+        queryset = self.get_object(pk)
+        serializer = EtykietaSerializer(queryset)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, pk):
+        etykieta = self.get_object(pk)
+        serializer = EtykietaSerializer(etykieta, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        etykieta = self.get_object(pk)
+        etykieta.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def patch(self, request, pk):
+        etykieta = self.get_object(pk)
+        serializer = EtykietaSerializer(etykieta, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class NotatkaEtykietaViewSetList(APIView):
+    def get(self, request):
+        queryset = NotatkaEtykieta.objects.all()
+        serializer = NotatkaEtykietaSerializer(queryset, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = NotatkaEtykietaSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class TablicaEtykietaViewSetList(APIView):
+    def get(self, request):
+        queryset = TablicaEtykieta.objects.all()
+        serializer = TablicaEtykietaSerializer(queryset, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = TablicaEtykietaSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class NotatkaEtykietyViewSetDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return NotatkaEtykieta.objects.filter(notatka=pk)
+        except NotatkaEtykieta.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, pk):
+        notatkaEtykiety = self.get_object(pk)
+        serializer = NotatkaEtykietySerializerGET(notatkaEtykiety, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, pk):
+        serializer = NotatkaEtykietaSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk):
+        notatkaEtykiety = self.get_object(pk)
+        serializer = NotatkaEtykietaSerializer(notatkaEtykiety, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, pk):
+        notatkaEtykiety = self.get_object(pk)
+        serializer = NotatkaEtykietaSerializer(notatkaEtykiety, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        notatkaEtykiety = self.get_object(pk)
+        notatkaEtykiety.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class TablicaEtykietyViewSetDetail(APIView):
+
+    def get_object(self, pk):
+        try:
+            return TablicaEtykieta.objects.filter(tablica=pk)
+        except TablicaEtykieta.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, pk):
+        tablicaEtykiety = self.get_object(pk)
+        serializer = TablicaEtykietySerializerGET(tablicaEtykiety, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, pk):
+        serializer = TablicaEtykietaSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk):
+        tablicaEtykiety = self.get_object(pk)
+        serializer = TablicaEtykietaSerializer(tablicaEtykiety, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, pk):
+        tablicaEtykiety = self.get_object(pk)
+        serializer = TablicaEtykietaSerializer(tablicaEtykiety, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        tablicaEtykiety = self.get_object(pk)
+        tablicaEtykiety.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 

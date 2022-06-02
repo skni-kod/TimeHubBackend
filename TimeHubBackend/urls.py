@@ -29,14 +29,24 @@ urlpatterns = [
 
 
     re_path(r'^api/user/$', UserViewSetList.as_view()),
+    re_path(r'^api/user/(?P<pk>[0-9]+)/$', UserViewSetDetail.as_view()),
     re_path(r'^api/tablice/$', TablicaViewSetList.as_view()), #GET i PUT wszystkich tablic
     re_path(r'^api/tablice/(?P<pk>[0-9]+)/$', TablicaViewSetDetail.as_view()), #CRUD do poszczegolnych tablic
     re_path(r'^api/tablicaUzytkownik/$', TablicaUzytkownikViewSetList.as_view()), #Set lista relacji tablica uzytkownik
     re_path(r'^api/tablicaUzytkownicy/(?P<pk>[0-9]+)/$', TablicaUzytkownicyViewSetDetail.as_view()), #wszyscy użytkownicy tablicy okreslonej przez pk , cały CRUD
     re_path(r'^api/uzytkownikTablice/$', UzytkownikTabliceViewSetDetail.as_view()), #tablice danego użytkownika po przekazaniu tokena w headerze requesta
+
     re_path(r'^api/kolumny/$', KolumnaViewSetList.as_view()), #GET PUT kolumn
     re_path(r'^api/kolumny/(?P<pk>[0-9]+)/$', KolumnaViewSetDetail.as_view()), #Detail set kolumn, GET PUT PATCH DELETE
     re_path(r'^api/tablicaKolumny/(?P<pk>[0-9]+)/$', TablicaKolumnyViewSetDetail.as_view()), #wszystkie kolumny danej tablicy
     re_path(r'^api/kolumnaNotatki/(?P<pk>[0-9]+)/$', KolumnaNotatkiViewSetDetail.as_view()), #wszystkie notatki danej kolumny
+
+    re_path(r'^api/etykiety/$', EtykietaViewSetList.as_view()), #GET PUT etykiet
+    re_path(r'^api/etykiety/(?P<pk>[0-9]+)/$', EtykietaViewSetDetail.as_view()), #GET PUT etykiet
+
+    re_path(r'^api/tablicaEtykieta/$', TablicaEtykietaViewSetList.as_view()),
+    re_path(r'^api/notatkaEtykieta/$', NotatkaEtykietaViewSetList.as_view()),
+    re_path(r'^api/notatkaEtykiety/(?P<pk>[0-9]+)/$', NotatkaEtykietyViewSetDetail.as_view()),
+    re_path(r'^api/tabliceEtykiety/(?P<pk>[0-9]+)/$', TablicaEtykietyViewSetDetail.as_view()),
 
 ]
