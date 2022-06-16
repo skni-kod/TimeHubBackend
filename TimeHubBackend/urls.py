@@ -25,8 +25,8 @@ urlpatterns = [
 
     path('api/notatka/', NotatkaViewSetList.as_view()), #MaciekP
     path('api/notatka/<int:pk>/', NotatkaViewSetDetail.as_view()), #MaciekP
-    path('api/uzytkowniknotatki/', UzytkownikNotatkiViewSetDetail.as_view()), #MaciekP
-    path('api/uzytkowniknotatka/', UzytkownikNotatkaViewSetList.as_view()), #MaciekP
+    path('api/uzytkownikNotatki/', UzytkownikNotatkiViewSetDetail.as_view()), #MaciekP
+    path('api/uzytkownikNotatka/', UzytkownikNotatkaViewSetList.as_view()), #MaciekP
 
 
 
@@ -50,5 +50,7 @@ urlpatterns = [
     re_path(r'^api/notatkaEtykieta/$', NotatkaEtykietaViewSetList.as_view()),
     re_path(r'^api/notatkaEtykiety/(?P<pk>[0-9]+)/$', NotatkaEtykietyViewSetDetail.as_view()),
     re_path(r'^api/tabliceEtykiety/(?P<pk>[0-9]+)/$', TablicaEtykietyViewSetDetail.as_view()),
+
+    re_path(r'^api/uzytkownikNotatkiMiesiacRok/$', UzytkownikNotatkiMiesiacRokViewSetDetail.as_view()),
 
 ]
