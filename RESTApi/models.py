@@ -13,11 +13,17 @@ class ZdjecieUzytkownika(models.Model):
 class Tablica(models.Model):
     tytul = models.CharField(max_length=255)
     czy_zautomatyzowane = models.BooleanField(default=False)
-    uzytkownicy = models.ManyToManyField(User)
 
     def __str__(self):
         return self.tytul
 
+class TablicaUzytkownik(models.Model):
+    tablica = models.ForeignKey(Tablica, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rola_w_tablicy = models.CharField(max_length=255)
+
+    def __str__(self):
+        return str(self.tablica)+" "+str(self.user)
 
 class Kolumna(models.Model):
     tytul = models.CharField(max_length=255)
@@ -36,7 +42,6 @@ class Notatka(models.Model): # MaciekP
     data_rozpoczecia = models.DateTimeField(blank=True, null=True)
     data_zakonczenia = models.DateTimeField(blank=True, null=True)
     kolumna = models.ForeignKey(Kolumna, on_delete=models.CASCADE)
-    etykieta = models.ManyToManyField('Etykieta')
 
     def __str__(self):
         return self.zawartosc
@@ -58,6 +63,19 @@ class Etykieta(models.Model):
     def __str__(self):
         return self.nazwa
 
+class TablicaEtykieta(models.Model):
+    tablica = models.ForeignKey(Tablica, on_delete=models.CASCADE)
+    etykieta = models.ForeignKey(Etykieta, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.tablica)+" "+str(self.etykieta)
+
+class NotatkaEtykieta(models.Model):
+    notatka = models.ForeignKey(Notatka, on_delete=models.CASCADE)
+    etykieta = models.ForeignKey(Etykieta, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.notatka)+" "+str(self.etykieta)
 
 class Zdjecie(models.Model):
     zdjecie = models.ImageField(upload_to='images')
