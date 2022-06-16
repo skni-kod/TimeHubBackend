@@ -76,6 +76,7 @@ class UzytkownikNotatkiViewSetDetail(APIView): #MaciekP
         try:
             return UzytkownikNotatka.objects.filter(user=pk)
         except UzytkownikNotatka.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
           
     def get(self, request):
         user = request.user
