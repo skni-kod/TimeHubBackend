@@ -58,15 +58,40 @@ class NotatkaViewSetDetail(APIView): #MacieKP
         notatka.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class NotatkiUzytownikaViewSetList(APIView): #MaciekP
+class UzytkownikNotatkaViewSetList(APIView):
+    def get(self, request):
+        queryset = UzytkownikNotatka.objects.all()
+        serializer = UzytkownikNotatkaSerializerGET(queryset, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
-    def get(self, request, pk, format=None):
-        notatki = Notatka.objects.filter(przypisany_uzytkownik=pk)
-        serializer = NotatkaSerializer(notatki, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def post(self, request):
+        serializer = UzytkownikNotatkaSerializerPOST(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UzytkownikNotatkiViewSetDetail(APIView): #MaciekP
+    def get_object(self, pk):
+        try:
+            return UzytkownikNotatka.objects.filter(user=pk)
+        except UzytkownikNotatka.DoesNotExist:
+          
+    def get(self, request):
+        user = request.user
+        UzytkownikNotatka = self.get_object(getattr(user, 'id'))
+        serializer = UzytkownikNotatkaSerializerGET(UzytkownikNotatka, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+    def post(self, request):
+        serializer = UzytkownikNotatkaSerializerPOST(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserViewSetList(APIView):
-
     def get(self, request, format=None):
         user = User.objects.all()
         serializer = UserSerializer(user, many=True)
@@ -231,19 +256,6 @@ class UzytkownikTabliceViewSetDetail(APIView):
         except TablicaUzytkownik.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request):
-        user = request.user
-        tablicaUzytkownik = self.get_object(getattr(user, 'id'))
-        serializer = UzytkownikTabliceSerializerGET(tablicaUzytkownik, many=True)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
-
-
-    def post(self, request):
-        serializer = UzytkownikTabliceSerializerPOST(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
-        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class KolumnaViewSetList(APIView):
 
@@ -475,6 +487,5 @@ class TablicaEtykietyViewSetDetail(APIView):
         tablicaEtykiety = self.get_object(pk)
         tablicaEtykiety.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
 
 

@@ -35,7 +35,6 @@ class Kolumna(models.Model):
 
 class Notatka(models.Model): # MaciekP
     stworzone_przez = models.ForeignKey(User, on_delete=models.CASCADE)
-    przypisany_uzytkownik = models.ManyToManyField(User, related_name='przypisany_uzytkownik')
     data_stworzenia = models.DateTimeField(auto_now_add=True)
     czy_zrobione = models.BooleanField(default=False)
     czy_wazne = models.BooleanField(default=False)
@@ -46,6 +45,13 @@ class Notatka(models.Model): # MaciekP
 
     def __str__(self):
         return self.zawartosc
+
+class UzytkownikNotatka(models.Model): # MaciekP
+    notatka = models.ForeignKey(Notatka, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.notatka) + " " + str(self.user)
 
 
 class Etykieta(models.Model):
@@ -77,3 +83,5 @@ class Zdjecie(models.Model):
 
     def __str__(self):
         return self.notatka.zawartosc
+
+
