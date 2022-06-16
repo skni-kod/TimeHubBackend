@@ -25,5 +25,6 @@ urlpatterns = [
 
     path('api/notatka/', NotatkaViewSetList.as_view()), #MaciekP
     path('api/notatka/<int:pk>/', NotatkaViewSetDetail.as_view()), #MaciekP
-    path('api/notatkiuzytkownika/', NotatkiUzytownikaViewSetList.as_view()), #MaciekP
+    path('api/uzytkowniknotatki/', UzytkownikNotatkiViewSetDetail.as_view()), #MaciekP
+    path('api/uzytkowniknotatka/', UzytkownikNotatkaViewSetList.as_view()), #MaciekP
 ]

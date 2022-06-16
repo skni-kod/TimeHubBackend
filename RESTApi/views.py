@@ -58,11 +58,38 @@ class NotatkaViewSetDetail(APIView): #MacieKP
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class NotatkiUzytownikaViewSetList(APIView): #MaciekP
+class UzytkownikNotatkaViewSetList(APIView):
+    def get(self, request):
+        queryset = UzytkownikNotatka.objects.all()
+        serializer = UzytkownikNotatkaSerializerGET(queryset, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
-    def get(self, request, format=None):
+    def post(self, request):
+        serializer = UzytkownikNotatkaSerializerPOST(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    
+
+class UzytkownikNotatkiViewSetDetail(APIView): #MaciekP
+    def get_object(self, pk):
+        try:
+            return UzytkownikNotatka.objects.filter(user=pk)
+        except UzytkownikNotatka.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
         user = request.user
-        #userid = self.get_object(getattr(user, 'id'))
-        notatki = Notatka.objects.filter(przypisany_uzytkownik=getattr(user, 'id'))
-        serializer = NotatkaSerializer(notatki, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        UzytkownikNotatka = self.get_object(getattr(user, 'id'))
+        serializer = UzytkownikNotatkaSerializerGET(UzytkownikNotatka, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+    def post(self, request):
+        serializer = UzytkownikNotatkaSerializerPOST(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
