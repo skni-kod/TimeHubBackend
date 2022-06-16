@@ -113,7 +113,7 @@ class UzytkownikNotatkiMiesiacRokViewSetDetail(APIView):
         except UzytkownikNotatka.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request):
+    def post(self, request):
         request_dict = request.data.dict()
         miesiac = request_dict['miesiac']
         rok = request_dict['rok']
@@ -140,7 +140,7 @@ class UzytkownikNotatkiDzienMiesiacRokViewSetDetail(APIView):
         except UzytkownikNotatka.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request):
+    def post(self, request):
         request_dict = request.data.dict()
         dzien = request_dict['dzien']
         miesiac = request_dict['miesiac']
