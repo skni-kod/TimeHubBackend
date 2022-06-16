@@ -267,6 +267,19 @@ class UzytkownikTabliceViewSetDetail(APIView):
         except TablicaUzytkownik.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+    def get(self, request):
+        user = request.user
+        tablicaUzytkownik = self.get_object(getattr(user, 'id'))
+        serializer = UzytkownikTabliceSerializerGET(tablicaUzytkownik, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = UzytkownikTabliceSerializerPOST(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class KolumnaViewSetList(APIView):
 
