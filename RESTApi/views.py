@@ -133,6 +133,34 @@ class UzytkownikNotatkiMiesiacRokViewSetDetail(APIView):
 
         return Response(data=filtered_data, status=status.HTTP_200_OK)
 
+class UzytkownikNotatkiDzienMiesiacRokViewSetDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return UzytkownikNotatka.objects.filter(user=pk)
+        except UzytkownikNotatka.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+        request_dict = request.data.dict()
+        dzien = request_dict['dzien']
+        miesiac = request_dict['miesiac']
+        rok = request_dict['rok']
+
+        filtered_data = []
+        user = request.user
+
+        UzytkownikNotatka = self.get_object(getattr(user, 'id'))
+        serializer = UzytkownikNotatkaSerializerGET(UzytkownikNotatka, many=True)
+
+        for record in serializer.data:
+            data_rozpoczecia = dateparse.parse_datetime(record['notatka']['data_rozpoczecia'])
+            data_zakonczenia = dateparse.parse_datetime(record['notatka']['data_zakonczenia'])
+
+            if (str(data_rozpoczecia.day) == dzien and str(data_rozpoczecia.month) == miesiac and str(data_rozpoczecia.year) == rok) or (str(data_zakonczenia.day) == dzien and str(data_zakonczenia.month) == miesiac and str(data_zakonczenia.year) == rok):
+                filtered_data.append(record)
+
+        return Response(data=filtered_data, status=status.HTTP_200_OK)
+
 class UserViewSetList(APIView):
     def get(self, request, format=None):
         user = User.objects.all()

@@ -52,5 +52,6 @@ urlpatterns = [
     re_path(r'^api/tabliceEtykiety/(?P<pk>[0-9]+)/$', TablicaEtykietyViewSetDetail.as_view()),
 
     re_path(r'^api/uzytkownikNotatkiMiesiacRok/$', UzytkownikNotatkiMiesiacRokViewSetDetail.as_view()),
+    re_path(r'^api/uzytkownikNotatkiDzienMiesiacRok/$', UzytkownikNotatkiDzienMiesiacRokViewSetDetail.as_view()),
 
 ]
