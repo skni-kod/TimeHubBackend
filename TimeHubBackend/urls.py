@@ -53,5 +53,6 @@ urlpatterns = [
 
     re_path(r'^api/uzytkownikNotatkiMiesiacRok/$', UzytkownikNotatkiMiesiacRokViewSetDetail.as_view()),
     re_path(r'^api/uzytkownikNotatkiDzienMiesiacRok/$', UzytkownikNotatkiDzienMiesiacRokViewSetDetail.as_view()),
+    re_path(r'^api/notatkiStatystyka1/$', NotatkiStatystyka1ViewSetDetail.as_view()),
 
 ]

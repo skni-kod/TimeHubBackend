@@ -10,7 +10,7 @@ from django.utils import dateparse
 from rest_framework.authtoken.models import Token
 # Create your views here.
 
-import datetime
+from datetime import datetime, timedelta
 
 
 class NotatkaViewSetList(APIView): #MaciekP
@@ -96,7 +96,13 @@ class UzytkownikNotatkiViewSetDetail(APIView): #MaciekP
         user = request.user
         UzytkownikNotatka = self.get_object(getattr(user, 'id'))
         serializer = UzytkownikNotatkaSerializerGET(UzytkownikNotatka, many=True)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+        processed_date = []
+
+        for record in serializer.data:
+            processed_date.append(record['notatka'])
+
+        return Response(data=processed_date, status=status.HTTP_200_OK)
 
 
     def post(self, request):
@@ -160,6 +166,48 @@ class UzytkownikNotatkiDzienMiesiacRokViewSetDetail(APIView):
                 filtered_data.append(record)
 
         return Response(data=filtered_data, status=status.HTTP_200_OK)
+
+class NotatkiStatystyka1ViewSetDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return UzytkownikNotatka.objects.filter(user=pk)
+        except UzytkownikNotatka.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+
+    def post(self, request):
+        request_dict = request.data.dict()
+        dzien = request_dict['dzien']
+        miesiac = request_dict['miesiac']
+        rok = request_dict['rok']
+
+        filtered_data = []
+        user = request.user
+
+        zrobioneCounter = 0;
+        allCounter = 0;
+
+        UzytkownikNotatka = self.get_object(getattr(user, 'id'))
+        serializer = UzytkownikNotatkaSerializerGET(UzytkownikNotatka, many=True)
+        actualDate = datetime.today()
+        #actualDate = actualDate - timedelta(days=7)
+        print(actualDate)
+
+        for record in serializer.data:
+            data_rozpoczecia = dateparse.parse_datetime(record['notatka']['data_rozpoczecia'])
+            data_zakonczenia = dateparse.parse_datetime(record['notatka']['data_zakonczenia'])
+            czy_zrobione = record['notatka']['czy_zrobione']
+
+
+
+
+            if ((data_rozpoczecia>=actualDate - timedelta(days=7) and data_rozpoczecia <= actualDate) or (data_zakonczenia>=actualDate - timedelta(days=7) and data_zakonczenia <= actualDate)):
+                allCounter = allCounter + 1
+                if(czy_zrobione==True):
+                    zrobioneCounter = zrobioneCounter + 1
+
+        return Response(data=filtered_data, status=status.HTTP_200_OK) #????????
 
 class UserViewSetList(APIView):
     def get(self, request, format=None):
