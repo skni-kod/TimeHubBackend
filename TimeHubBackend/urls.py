@@ -53,6 +53,7 @@ urlpatterns = [
 
     re_path(r'^api/uzytkownikNotatkiMiesiacRok/$', UzytkownikNotatkiMiesiacRokViewSetDetail.as_view()),
     re_path(r'^api/uzytkownikNotatkiDzienMiesiacRok/$', UzytkownikNotatkiDzienMiesiacRokViewSetDetail.as_view()),
-    re_path(r'^api/notatkiStatystykaSkonczoneAktywne7Dni/$',NotatkiStatystykaSkonczoneAktywne7DniViewSetDetail.as_view()),
+    re_path(r'^api/statystykaNotatkiSkonczoneAktywne7Dni/$',StatystykaNotatkiSkonczoneAktywne7DniViewSetDetail.as_view()),
+    re_path(r'^api/statystyka/$',StatystykaProcentowaIloscTaskowWTablicach.as_view()),
 
 ]

@@ -167,14 +167,12 @@ class UzytkownikNotatkiDzienMiesiacRokViewSetDetail(APIView):
 
         return Response(data=filtered_data, status=status.HTTP_200_OK)
 
-class NotatkiStatystykaSkonczoneAktywne7DniViewSetDetail(APIView):
+class StatystykaNotatkiSkonczoneAktywne7DniViewSetDetail(APIView):
     def get_object(self, pk):
         try:
             return UzytkownikNotatka.objects.filter(user=pk)
         except UzytkownikNotatka.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
 
     def get(self, request):
         user = request.user
@@ -380,6 +378,33 @@ class UzytkownikTabliceViewSetDetail(APIView):
             serializer.save()
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class StatystykaProcentowaIloscTaskowWTablicach(APIView):
+    def get(selfself, request):
+        user = request.user
+        tablicaUzytkownik = TablicaUzytkownik.objects.filter(user=getattr(user, 'id'))
+        serializerTablicaUzytkownik = UzytkownikTabliceSerializerGET(tablicaUzytkownik, many=True)
+
+        statistict = {}
+        counter = 0
+
+        for tablice in serializerTablicaUzytkownik.data:
+            tablica_id = tablice['tablica']['id']
+            statistict.update({str(tablice['tablica']['tytul']): 0})
+            tablicaKolumny = Kolumna.objects.filter(tablica=tablica_id)
+            serializerTablicaKolumny = KolumnaSerializer(tablicaKolumny, many=True)
+            for kolumny in serializerTablicaKolumny.data:
+                kolumna_id = kolumny['id']
+                kolumnaNotatki = Notatka.objects.filter(kolumna=kolumna_id)
+                serializerKolumnaNotatki = NotatkaSerializer(kolumnaNotatki, many=True)
+                for notatka in serializerKolumnaNotatki.data:
+                    statistict[str(tablice['tablica']['tytul'])] = statistict[str(tablice['tablica']['tytul'])] + 1
+                    counter = counter + 1
+
+        for key in statistict.keys():
+            statistict[key] = round((statistict[key]*100)/counter)
+
+        return Response(data=statistict, status=status.HTTP_200_OK)
 
 
 class KolumnaViewSetList(APIView):
