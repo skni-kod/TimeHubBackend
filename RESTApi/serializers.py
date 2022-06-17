@@ -62,7 +62,7 @@ class UzytkownikTabliceSerializerPOST(serializers.ModelSerializer):
 class KolumnaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Kolumna
-        fields = ('tablica','tytul')
+        fields = '__alL__'
 
 class EtykietaSerializer(serializers.ModelSerializer):
     class Meta:
