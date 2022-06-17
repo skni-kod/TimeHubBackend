@@ -167,7 +167,7 @@ class UzytkownikNotatkiDzienMiesiacRokViewSetDetail(APIView):
 
         return Response(data=filtered_data, status=status.HTTP_200_OK)
 
-class NotatkiStatystyka1ViewSetDetail(APIView):
+class NotatkiStatystykaSkonczoneAktywne7DniViewSetDetail(APIView):
     def get_object(self, pk):
         try:
             return UzytkownikNotatka.objects.filter(user=pk)
@@ -176,13 +176,7 @@ class NotatkiStatystyka1ViewSetDetail(APIView):
 
 
 
-    def post(self, request):
-        request_dict = request.data.dict()
-        dzien = request_dict['dzien']
-        miesiac = request_dict['miesiac']
-        rok = request_dict['rok']
-
-        filtered_data = []
+    def get(self, request):
         user = request.user
 
         zrobioneCounter = 0;
@@ -190,24 +184,24 @@ class NotatkiStatystyka1ViewSetDetail(APIView):
 
         UzytkownikNotatka = self.get_object(getattr(user, 'id'))
         serializer = UzytkownikNotatkaSerializerGET(UzytkownikNotatka, many=True)
-        actualDate = datetime.today()
-        #actualDate = actualDate - timedelta(days=7)
-        print(actualDate)
+        actualDate = datetime.today().date()
+
+        statistics = {}
 
         for record in serializer.data:
-            data_rozpoczecia = dateparse.parse_datetime(record['notatka']['data_rozpoczecia'])
-            data_zakonczenia = dateparse.parse_datetime(record['notatka']['data_zakonczenia'])
+            data_rozpoczecia = dateparse.parse_datetime(record['notatka']['data_rozpoczecia']).date()
+            data_zakonczenia = dateparse.parse_datetime(record['notatka']['data_zakonczenia']).date()
             czy_zrobione = record['notatka']['czy_zrobione']
-
-
-
 
             if ((data_rozpoczecia>=actualDate - timedelta(days=7) and data_rozpoczecia <= actualDate) or (data_zakonczenia>=actualDate - timedelta(days=7) and data_zakonczenia <= actualDate)):
                 allCounter = allCounter + 1
                 if(czy_zrobione==True):
                     zrobioneCounter = zrobioneCounter + 1
 
-        return Response(data=filtered_data, status=status.HTTP_200_OK) #????????
+        statistics.update({"zrobione": zrobioneCounter})
+        statistics.update({"w_trakcie": allCounter-zrobioneCounter})
+
+        return Response(data=statistics, status=status.HTTP_200_OK)
 
 class UserViewSetList(APIView):
     def get(self, request, format=None):
