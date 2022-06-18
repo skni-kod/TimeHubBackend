@@ -62,7 +62,7 @@ class UzytkownikTabliceSerializerGET(serializers.ModelSerializer):
 class UzytkownikTabliceSerializerPOST(serializers.ModelSerializer):
     class Meta:
         model = TablicaUzytkownik
-        fields = ('user','tablica')
+        fields = ('id','user','tablica')
 
 class KolumnaSerializer(serializers.ModelSerializer):
     class Meta:
