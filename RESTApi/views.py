@@ -424,7 +424,7 @@ class KolumnaViewSetList(APIView):
         serializer = KolumnaSerializer(user, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     def post(self, request):
-        serializer = TablicaUzytkownikSerializer(data=request.data)
+        serializer = KolumnaSerializerPOST(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)

@@ -69,6 +69,11 @@ class KolumnaSerializer(serializers.ModelSerializer):
         model = Kolumna
         fields = ('id','tablica','tytul')
 
+class KolumnaSerializerPOST(serializers.ModelSerializer):
+    class Meta:
+        model = Kolumna
+        fields = ('tablica','tytul')
+
 class EtykietaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Etykieta
