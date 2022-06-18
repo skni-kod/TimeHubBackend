@@ -5,7 +5,12 @@ from rest_framework import serializers
 class NotatkaSerializer(serializers.ModelSerializer): #MaciekP
     class Meta:
         model = Notatka
-        fields = ('id', 'kolumna', 'stworzone_przez', 'data_stworzenia', 'czy_zrobione', 'czy_wazne', 'zawartosc', 'data_rozpoczecia', 'data_zakonczenia')
+        fields = ('id', 'kolumna', 'data_stworzenia', 'czy_zrobione', 'czy_wazne', 'zawartosc', 'data_rozpoczecia', 'data_zakonczenia', 'stworzone_przez')
+
+class NotatkaSerializerPOST(serializers.ModelSerializer):
+    class Meta:
+        model = Notatka
+        fields = ('id', 'kolumna', 'data_stworzenia', 'czy_zrobione', 'czy_wazne', 'zawartosc', 'data_rozpoczecia', 'data_zakonczenia')
 
 class UzytkownikNotatkaSerializerPOST(serializers.ModelSerializer): #MaciekP
     class Meta:

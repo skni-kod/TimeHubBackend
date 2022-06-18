@@ -21,13 +21,23 @@ class NotatkaViewSetList(APIView): #MaciekP
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, format=None):
-        serializer = NotatkaSerializer(data=request.data)
+
+
+
+        new_data = {}
+
+        serializer = NotatkaSerializerPOST(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            user_id = serializer.data.get('stworzone_przez')
-            notatka_id = serializer.data.get('id')
-            UzytkownikNotatkaViewSetList.outerPost(self, {'user': user_id, 'notatka': notatka_id})
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            user = request.user
+            user_id = getattr(user, 'id')
+            new_data.update(serializer.data)
+            new_data.update({'stworzone_przez': user_id})
+            serializer = NotatkaSerializer(data=new_data)
+            if serializer.is_valid():
+                serializer.save()
+                notatka_id = serializer.data.get('id')
+                UzytkownikNotatkaViewSetList.outerPost(self, {'user': user_id, 'notatka': notatka_id})
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
