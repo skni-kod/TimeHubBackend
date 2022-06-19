@@ -177,6 +177,41 @@ class UzytkownikNotatkiDzienMiesiacRokViewSetDetail(APIView):
 
         return Response(data=filtered_data, status=status.HTTP_200_OK)
 
+class ZrobioneNotatkiDzienMiesiacRokViewSetDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return UzytkownikNotatka.objects.filter(user=pk)
+        except UzytkownikNotatka.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request):
+        request_dict = request.data.dict()
+        dzien = request_dict['dzien']
+        miesiac = request_dict['miesiac']
+        rok = request_dict['rok']
+
+        counter = 0
+        counter_done = 0
+        filtered_data = []
+        user = request.user
+
+        UzytkownikNotatka = self.get_object(getattr(user, 'id'))
+        serializer = UzytkownikNotatkaSerializerGET(UzytkownikNotatka, many=True)
+
+        for record in serializer.data:
+            data_rozpoczecia = dateparse.parse_datetime(record['notatka']['data_rozpoczecia'])
+            data_zakonczenia = dateparse.parse_datetime(record['notatka']['data_zakonczenia'])
+
+            if (str(data_rozpoczecia.day) == dzien and str(data_rozpoczecia.month) == miesiac and str(data_rozpoczecia.year) == rok) or (str(data_zakonczenia.day) == dzien and str(data_zakonczenia.month) == miesiac and str(data_zakonczenia.year) == rok):
+                counter = counter + 1
+                if record['notatka']['czy_zrobione'] == True:
+                    counter_done = counter_done + 1
+
+        filtered_data.append({'ilosc_zrobionych':counter_done})
+        filtered_data.append({'wszystkich': counter})
+
+        return Response(data=filtered_data, status=status.HTTP_200_OK)
+
 class StatystykaNotatkiSkonczoneAktywne7DniViewSetDetail(APIView):
     def get_object(self, pk):
         try:
@@ -424,7 +459,7 @@ class KolumnaViewSetList(APIView):
         serializer = KolumnaSerializer(user, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     def post(self, request):
-        serializer = KolumnaSerializerPOST(data=request.data)
+        serializer = KolumnaSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
