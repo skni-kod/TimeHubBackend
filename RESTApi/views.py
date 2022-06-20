@@ -178,73 +178,73 @@ class UzytkownikNotatkiDzienMiesiacRokViewSetDetail(APIView):
         return Response(data=filtered_data, status=status.HTTP_200_OK)
 
 class ZrobioneNotatkiDzienMiesiacRokViewSetDetail(APIView):
-    def get_object(self, pk):
+    def get_object(self, pk):  #funkcja służąca do wyszukiwania notatek danego użytkownika o danym id
         try:
             return UzytkownikNotatka.objects.filter(user=pk)
         except UzytkownikNotatka.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
-        request_dict = request.data.dict()
-        dzien = request_dict['dzien']
-        miesiac = request_dict['miesiac']
-        rok = request_dict['rok']
+        request_dict = request.data.dict() # zapisanie danych z requesta jako dictionary
+        dzien = request_dict['dzien'] #wyciągniecie z body requesta wartości dzien
+        miesiac = request_dict['miesiac']   #wyciągniecie z body requesta wartości miesiac
+        rok = request_dict['rok']   #wyciągniecie z body requesta wartości rok
 
-        counter = 0
-        counter_done = 0
-        filtered_data = []
-        user = request.user
+        counter = 0 #licznik wszystkich notatek z tego dnia
+        counter_done = 0 #licznik zrobionych
+        filtered_data = [] #tablica która będzie przechowywać przefiltrowane dane
+        user = request.user #pobranie aktualnie zalogowanego użytkownika z requesta
 
-        UzytkownikNotatka = self.get_object(getattr(user, 'id'))
-        serializer = UzytkownikNotatkaSerializerGET(UzytkownikNotatka, many=True)
+        UzytkownikNotatka = self.get_object(getattr(user, 'id')) #przechwycenie wszystkich notatek zalogowanego użytkownika na podstawie jego id z pobranego wcześniej obiektu usera
+        serializer = UzytkownikNotatkaSerializerGET(UzytkownikNotatka, many=True) #serializacja przechwyconych danych
 
-        for record in serializer.data:
-            data_rozpoczecia = dateparse.parse_datetime(record['notatka']['data_rozpoczecia'])
-            data_zakonczenia = dateparse.parse_datetime(record['notatka']['data_zakonczenia'])
+        for record in serializer.data: #iteracja po każdej notatce użytkownika
+            data_rozpoczecia = dateparse.parse_datetime(record['notatka']['data_rozpoczecia'])#wyciągniecie z rekordu daty rozpoczecia
+            data_zakonczenia = dateparse.parse_datetime(record['notatka']['data_zakonczenia']) #wyciągniecie z rekordu daty zakończenia
 
-            if (str(data_rozpoczecia.day) == dzien and str(data_rozpoczecia.month) == miesiac and str(data_rozpoczecia.year) == rok) or (str(data_zakonczenia.day) == dzien and str(data_zakonczenia.month) == miesiac and str(data_zakonczenia.year) == rok):
-                counter = counter + 1
-                if record['notatka']['czy_zrobione'] == True:
-                    counter_done = counter_done + 1
+            if (str(data_rozpoczecia.day) == dzien and str(data_rozpoczecia.month) == miesiac and str(data_rozpoczecia.year) == rok) or (str(data_zakonczenia.day) == dzien and str(data_zakonczenia.month) == miesiac and str(data_zakonczenia.year) == rok): #sprawdzenie czy notatka jest z danego dnia
+                counter = counter + 1 #zwiekszenie licznika o 1
+                if record['notatka']['czy_zrobione'] == True: #sprawdzenie czy dana notatka jest oznaczona jako zrobiona
+                    counter_done = counter_done + 1 #zwiekszenie licznika zrobionych notatek
 
-        filtered_data.append({'ilosc_zrobionych':counter_done})
-        filtered_data.append({'wszystkich': counter})
+        filtered_data.append({'ilosc_zrobionych':counter_done}) #dodanie do seta ilości zrobionych notatek
+        filtered_data.append({'wszystkich': counter}) #dodanie do seta ilości wszystkich notatek
 
-        return Response(data=filtered_data, status=status.HTTP_200_OK)
+        return Response(data=filtered_data, status=status.HTTP_200_OK) #zwrócenie danych poprzez response na front
 
 class StatystykaNotatkiSkonczoneAktywne7DniViewSetDetail(APIView):
-    def get_object(self, pk):
+    def get_object(self, pk): #funkcja służąca do wyszukiwania notatek danego użytkownika o danym id
         try:
             return UzytkownikNotatka.objects.filter(user=pk)
         except UzytkownikNotatka.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
-        user = request.user
+        user = request.user #pobranie aktualnie zalogowanego użytkownika z requesta
 
-        zrobioneCounter = 0;
-        allCounter = 0;
+        zrobioneCounter = 0; #licznik notatek oznaczonych jako zrobione
+        allCounter = 0; #licznik wszystkich notatek
 
-        UzytkownikNotatka = self.get_object(getattr(user, 'id'))
-        serializer = UzytkownikNotatkaSerializerGET(UzytkownikNotatka, many=True)
-        actualDate = datetime.today().date()
+        UzytkownikNotatka = self.get_object(getattr(user, 'id')) #przechwycenie wszystkich notatek zalogowanego użytkownika na podstawie jego id z pobranego wcześniej obiektu usera
+        serializer = UzytkownikNotatkaSerializerGET(UzytkownikNotatka, many=True) #serializacja pobranych wyżej danych
+        actualDate = datetime.today().date() #pobranie aktualnej daty
 
-        statistics = {}
+        statistics = {} #set do którego będą dodawanie informacje później wysyłane na front
 
-        for record in serializer.data:
-            data_rozpoczecia = dateparse.parse_datetime(record['notatka']['data_rozpoczecia']).date()
-            data_zakonczenia = dateparse.parse_datetime(record['notatka']['data_zakonczenia']).date()
-            czy_zrobione = record['notatka']['czy_zrobione']
+        for record in serializer.data: #iteracja po każdej notatce użytkownika
+            data_rozpoczecia = dateparse.parse_datetime(record['notatka']['data_rozpoczecia']).date() #wyciągniecie z rekordu daty rozpoczecia
+            data_zakonczenia = dateparse.parse_datetime(record['notatka']['data_zakonczenia']).date() #wyciągniecie z rekordu daty zakończenia
+            czy_zrobione = record['notatka']['czy_zrobione'] #wyciągniecie z rekordu informacji czy zrobione
 
-            if ((data_rozpoczecia>=actualDate - timedelta(days=7) and data_rozpoczecia <= actualDate) or (data_zakonczenia>=actualDate - timedelta(days=7) and data_zakonczenia <= actualDate)):
-                allCounter = allCounter + 1
-                if(czy_zrobione==True):
-                    zrobioneCounter = zrobioneCounter + 1
+            if ((data_rozpoczecia>=actualDate - timedelta(days=7) and data_rozpoczecia <= actualDate) or (data_zakonczenia>=actualDate - timedelta(days=7) and data_zakonczenia <= actualDate)): #sprawdzanie czy data rozpoczecia lub data zakończenia jest z przedziału ostatnich 7 dni
+                allCounter = allCounter + 1 #zwiekszenie licznika wszystkich notatek o 1
+                if(czy_zrobione==True): #jeżeli notatka jest oznaczona jako zrobiona to:
+                    zrobioneCounter = zrobioneCounter + 1 #zwiekszenie licznika zrobionych notatek;
 
-        statistics.update({"zrobione": zrobioneCounter})
-        statistics.update({"w_trakcie": allCounter-zrobioneCounter})
+        statistics.update({"zrobione": zrobioneCounter}) #dodanie do seta ilości zrobionych notatek
+        statistics.update({"w_trakcie": allCounter-zrobioneCounter}) #dodanie do seta ilości notatek w trakcie
 
-        return Response(data=statistics, status=status.HTTP_200_OK)
+        return Response(data=statistics, status=status.HTTP_200_OK) #zwrócenie danych poprzez response na front
 
 class UserViewSetList(APIView):
     def get(self, request, format=None):
@@ -426,30 +426,30 @@ class UzytkownikTabliceViewSetDetail(APIView):
 
 class StatystykaProcentowaIloscTaskowWTablicach(APIView):
     def get(selfself, request):
-        user = request.user
-        tablicaUzytkownik = TablicaUzytkownik.objects.filter(user=getattr(user, 'id'))
-        serializerTablicaUzytkownik = UzytkownikTabliceSerializerGET(tablicaUzytkownik, many=True)
+        user = request.user #pobranie aktualnie zalogowanego użytkownika z requesta
+        tablicaUzytkownik = TablicaUzytkownik.objects.filter(user=getattr(user, 'id')) #przechwycenie wszystkich rekordów relacji Tablica Uzytkownik o id uzytkownika równym id usera zalogowanego
+        serializerTablicaUzytkownik = UzytkownikTabliceSerializerGET(tablicaUzytkownik, many=True) #serializacja przechwyconych danych
 
-        statistict = {}
-        counter = 0
+        statistict = {} #pusty set do któego dodawane będą dane wyjściowe
+        counter = 0 #licznik przechowujący ilość wszystkich notatek
 
-        for tablice in serializerTablicaUzytkownik.data:
-            tablica_id = tablice['tablica']['id']
-            statistict.update({str(tablice['tablica']['tytul']): 0})
-            tablicaKolumny = Kolumna.objects.filter(tablica=tablica_id)
-            serializerTablicaKolumny = KolumnaSerializer(tablicaKolumny, many=True)
-            for kolumny in serializerTablicaKolumny.data:
-                kolumna_id = kolumny['id']
-                kolumnaNotatki = Notatka.objects.filter(kolumna=kolumna_id)
-                serializerKolumnaNotatki = NotatkaSerializer(kolumnaNotatki, many=True)
-                for notatka in serializerKolumnaNotatki.data:
-                    statistict[str(tablice['tablica']['tytul'])] = statistict[str(tablice['tablica']['tytul'])] + 1
-                    counter = counter + 1
+        for tablice in serializerTablicaUzytkownik.data: #iteracja po wszystkich rekordach z wcześniej przefiltrowanych danych
+            tablica_id = tablice['tablica']['id']   #przechwycenie id tablicy  danego rekordu
+            statistict.update({str(tablice['tablica']['tytul']): 0})    #dodanie do danych wyjściowych kolejnych nazw tablic z licznikiem ustawionym na 0
+            tablicaKolumny = Kolumna.objects.filter(tablica=tablica_id) #przefiltrowanie wszystkich kolumn przypisanych do danej tablicy
+            serializerTablicaKolumny = KolumnaSerializer(tablicaKolumny, many=True) #serializacja przechwyconych kolumn
+            for kolumny in serializerTablicaKolumny.data: #iteracja po każdej kolumnie danej tablicy
+                kolumna_id = kolumny['id']  #przechwycenie id kolumny
+                kolumnaNotatki = Notatka.objects.filter(kolumna=kolumna_id) #przefiltrowanie wszystkich notatek przypisanych do danej kolumny
+                serializerKolumnaNotatki = NotatkaSerializer(kolumnaNotatki, many=True) #serializacja przechwyconych notatek
+                for notatka in serializerKolumnaNotatki.data: #iteracja po każdej notatce danej kolumny
+                    statistict[str(tablice['tablica']['tytul'])] = statistict[str(tablice['tablica']['tytul'])] + 1 #zwiększenie licznika ilości notatek(tasków) w danej tablicy
+                    counter = counter + 1 #zwiekszenie licznika ilości wszystkich notatek o 1
 
-        for key in statistict.keys():
-            statistict[key] = round((statistict[key]*100)/counter)
+        for key in statistict.keys(): #iteracja po secie przechowującym ilości notatek w danej tablicy
+            statistict[key] = round((statistict[key]*100)/counter) #zmienienie wartości liczbowych na wartości procentowe
 
-        return Response(data=statistict, status=status.HTTP_200_OK)
+        return Response(data=statistict, status=status.HTTP_200_OK) #wysłanie responsa z stworzonym setem danych na front
 
 
 class KolumnaViewSetList(APIView):
